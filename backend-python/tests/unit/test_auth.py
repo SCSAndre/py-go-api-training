@@ -7,13 +7,9 @@ Tests cover:
 - Email normalization
 - Password validation
 """
-import pytest
 from jose import jwt
 
-from src.core.auth import create_access_token, get_current_user
 from src.core.config import settings
-from src.models.user import User, UserRole
-from src.schemas.user import UserCreate, UserLogin, UserUpdate
 
 
 class TestTokenValidation:

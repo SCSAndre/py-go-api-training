@@ -47,7 +47,12 @@ async def health_check():
 @app.get("/")
 async def root():
     """Root endpoint with API information."""
-    return {"message": "Welcome to the Intern Training API", "version": "1.0.0", "docs": "/docs", "health": "/health"}
+    return {
+        "message": "Welcome to the Intern Training API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/health",
+    }
 
 
 # Include routers
