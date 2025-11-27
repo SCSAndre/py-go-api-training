@@ -27,10 +27,10 @@ Base = declarative_base()
 def get_db():
     """
     Dependency function to get database session.
-    
+
     Yields:
         Session: SQLAlchemy database session
-        
+
     Example:
         @app.get("/items")
         def get_items(db: Session = Depends(get_db)):

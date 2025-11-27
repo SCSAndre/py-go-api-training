@@ -10,6 +10,8 @@ from sqlalchemy.orm import sessionmaker
 
 from src.main import app
 from src.core.database import Base, get_db
+from src.core.auth import get_password_hash, create_access_token
+from src.models.user import User, UserRole
 
 # Use in-memory SQLite for testing
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -40,7 +42,7 @@ def client(db_session):
             yield db_session
         finally:
             pass
-    
+
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
@@ -49,11 +51,21 @@ def client(db_session):
 
 @pytest.fixture
 def sample_user_data():
-    """Sample user data for testing."""
+    """Sample user data for testing with valid password."""
     return {
         "email": "test@example.com",
-        "password": "testpassword123",
+        "password": "TestPassword123!",  # Valid password with all requirements
         "role": "user"
+    }
+
+
+@pytest.fixture
+def sample_admin_data():
+    """Sample admin user data for testing."""
+    return {
+        "email": "admin@example.com",
+        "password": "AdminPassword123!",
+        "role": "admin"
     }
 
 
@@ -67,3 +79,57 @@ def sample_book_data():
         "published_date": "2023-01-15",
         "description": "A test book"
     }
+
+
+@pytest.fixture
+def test_user(db_session):
+    """Create a test user in the database."""
+    user = User(
+        email="testuser@example.com",
+        hashed_password=get_password_hash("TestPassword123!"),
+        role=UserRole.USER
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
+
+
+@pytest.fixture
+def admin_user(db_session):
+    """Create an admin user in the database."""
+    user = User(
+        email="admin@example.com",
+        hashed_password=get_password_hash("AdminPassword123!"),
+        role=UserRole.ADMIN
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
+
+
+@pytest.fixture
+def user_token(test_user):
+    """Create a valid JWT token for the test user."""
+    token = create_access_token(data={"sub": test_user.email, "user_id": test_user.id})
+    return token
+
+
+@pytest.fixture
+def admin_token(admin_user):
+    """Create a valid JWT token for the admin user."""
+    token = create_access_token(data={"sub": admin_user.email, "user_id": admin_user.id})
+    return token
+
+
+@pytest.fixture
+def auth_headers(user_token):
+    """Create authentication headers for the test user."""
+    return {"Authorization": f"Bearer {user_token}"}
+
+
+@pytest.fixture
+def admin_auth_headers(admin_token):
+    """Create authentication headers for the admin user."""
+    return {"Authorization": f"Bearer {admin_token}"}

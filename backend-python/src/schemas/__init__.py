@@ -1,4 +1,23 @@
 """Pydantic schemas package for request/response validation."""
-# TODO: Import your schemas here as you create them
-# from src.schemas.user import UserCreate, UserResponse
-# from src.schemas.book import BookCreate, BookResponse
+from src.schemas.user import (
+    UserBase,
+    UserCreate,
+    UserLogin,
+    UserUpdate,
+    UserResponse,
+    TokenResponse,
+)
+from src.schemas.book import BookBase, BookCreate, BookUpdate, BookResponse
+
+__all__ = [
+    "UserBase",
+    "UserCreate",
+    "UserLogin",
+    "UserUpdate",
+    "UserResponse",
+    "TokenResponse",
+    "BookBase",
+    "BookCreate",
+    "BookUpdate",
+    "BookResponse",
+]
